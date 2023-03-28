@@ -1,10 +1,10 @@
 import React, {useState} from 'react'
-import {View, Text} from 'react-native'
+import {View, Text, StyleSheet, TextInput, Pressable, Alert} from 'react-native'
 import EmojiPicker, {pt} from 'rn-emoji-keyboard'
 
 export default function AddCripto({navigation}){
     const [isOpen, setIsOpen] = useState(false)
-    const [novaCripto, setNovaCripto] = usestate({
+    const [novaCripto, setNovaCripto] = useState({
         emoji:'💰', nome:'',
         simbolo:'', quantidade: 0, valor: 0, vendido: false, valorVenda:0
     })
@@ -12,9 +12,36 @@ export default function AddCripto({navigation}){
     const handleTeclado =(emojiObject) => {
         setNovaCripto({...novaCripto, emoji: emojiObject.emoji})
     }
+
+    const validaCripto = async () =>{
+        //Efetuando asvalidações dos formulários
+        if(novaCripto.nome === ' '){
+        Alert.alert('⚠ Atenção', 'O campo nome da criptomoeda é obrigatório')
+            return
+    }
+    if(novaCripto.simbolo.length !==3){
+        Alert.alert('⚠ Atenção', 'O simbolo deve ter 3 caracteres')
+            return
+    }
+    if(novaCripto.valor <= 0){
+        Alert.alert('⚠ Atenção', 'O valor da compra deve ser um numero positivo')
+            return
+    }
+    if(parseFloat(novaCripto.quantidade) <= 0){
+        Alert.alert('⚠ Atenção', 'A quantidade deve ser um numero positivo')
+            return
+    }
+    //Lógica para salvar no Firebase
+    navigation.goBack()
+}
     return (
-        <View>
-            <Text>Adicionar Cripto</Text>
+        <View style={styles.container}>
+            <Text style={styles.title}>Nova Criptomoeda</Text>
+            <Text style={styles.emoji}
+            onPress={()=> setIsOpen(true)}>
+                {novaCripto.emoji}
+            </Text>
+            
             <EmojiPicker
                 onEmojiSelected={ handleTeclado }
                 open={isOpen}
@@ -26,6 +53,71 @@ export default function AddCripto({navigation}){
                 <Text onPress={()=>setIsOpen(true)}>
                     Abrir Teclado Emoji
                 </Text>
+                <TextInput
+                style={styles.input}
+                placeholder='Símbolo. Ex: BTC'
+                maxLength ={3}
+                keyboarType='default'
+                autoCapitalize={'characters'}
+                onChangeText={(text)=> setNovaCripto(
+                    {...novaCripto, simbolo: text})}
+                />
+
+                <TextInput
+                style={styles.input}
+                placeholder='Nome da Moeda. Ex: Bitcoin'
+                maxLength ={50}
+                keyboarType='default'
+                autoCapitalize={'characters'}
+                onChangeText={(text)=> setNovaCripto(
+                    {...novaCripto, nome: text})}
+                />
+                    
+                <TextInput
+                style={styles.input}
+                placeholder='Quantidade Adquirida'
+                keyboardType='numeric'
+                onChangeText={(text)=> setNovaCripto(
+                    {...novaCripto, quantidade: text})}
+                />
+
+                <TextInput
+                style={styles.input}
+                placeholder='Valor de Compra em R$'
+                keyboardType='numeric'
+                onChangeText={(text)=> setNovaCripto(
+                    {...novaCripto, valor: text})}
+                />
+
+                <Pressable onPress={validaCripto}>
+                    <Text>Salvar</Text>
+                </Pressable>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FFF',
+        alignItems:'center'
+    },
+    title:{
+        fontSize: 32,
+        fontWeith:'700'
+    },
+    emoji:{
+        fontSize:100,
+        borderWidth:1,
+        borderRadius:8,
+        padding:8,
+        borderColor: '#DDD'
+
+    },
+    input:{
+        width:'90%',
+        padding:8,
+        marginVertical: 4,
+        borderWidth:1, borderColor: '#DDD', borderRadius:8
+    }
+})
