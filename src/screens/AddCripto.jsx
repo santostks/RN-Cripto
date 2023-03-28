@@ -46,7 +46,7 @@ export default function AddCripto({navigation}){
                 onEmojiSelected={ handleTeclado }
                 open={isOpen}
                 onClose={()=>setIsOpen(false)}
-                translatio={pt}
+                translation={pt}
                 enableRecentlyUsed
                 enableSearchBar
                 />
